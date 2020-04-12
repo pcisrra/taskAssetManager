@@ -1,0 +1,88 @@
+@extends('layouts.admin')
+@section('content')
+
+<div class="card">
+    <div class="card-header">
+        {{ trans('global.edit') }} {{ trans('cruds.task.title_singular') }}
+    </div>
+
+    <div class="card-body">
+        <form method="POST" action="{{ route("admin.tasks.update", [$task->id]) }}" enctype="multipart/form-data">
+            @method('PUT')
+            @csrf
+            <div class="form-group">
+                <label class="required" for="name">{{ trans('cruds.task.fields.name') }}</label>
+                <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $task->name) }}" required>
+                @if($errors->has('name'))
+                    <span class="text-danger">{{ $errors->first('name') }}</span>
+                @endif
+                <span class="help-block">{{ trans('cruds.task.fields.name_helper') }}</span>
+            </div>
+            <div class="form-group">
+                <label for="description">{{ trans('cruds.task.fields.description') }}</label>
+                <textarea class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" name="description" id="description">{{ old('description', $task->description) }}</textarea>
+                @if($errors->has('description'))
+                    <span class="text-danger">{{ $errors->first('description') }}</span>
+                @endif
+                <span class="help-block">{{ trans('cruds.task.fields.description_helper') }}</span>
+            </div>
+            <div class="form-group">
+                <label class="required" for="status_id">{{ trans('cruds.task.fields.status') }}</label>
+                <select class="form-control select2 {{ $errors->has('status') ? 'is-invalid' : '' }}" name="status_id" id="status_id" required>
+                    @foreach($statuses as $id => $status)
+                        <option value="{{ $id }}" {{ ($task->status ? $task->status->id : old('status_id')) == $id ? 'selected' : '' }}>{{ $status }}</option>
+                    @endforeach
+                </select>
+                @if($errors->has('status'))
+                    <span class="text-danger">{{ $errors->first('status') }}</span>
+                @endif
+                <span class="help-block">{{ trans('cruds.task.fields.status_helper') }}</span>
+            </div>
+            <div class="form-group">
+                <label for="tags">{{ trans('cruds.task.fields.tag') }}</label>
+                <div style="padding-bottom: 4px">
+                    <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
+                    <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
+                </div>
+                <select class="form-control select2 {{ $errors->has('tags') ? 'is-invalid' : '' }}" name="tags[]" id="tags" multiple>
+                    @foreach($tags as $id => $tag)
+                        <option value="{{ $id }}" {{ (in_array($id, old('tags', [])) || $task->tags->contains($id)) ? 'selected' : '' }}>{{ $tag }}</option>
+                    @endforeach
+                </select>
+                @if($errors->has('tags'))
+                    <span class="text-danger">{{ $errors->first('tags') }}</span>
+                @endif
+                <span class="help-block">{{ trans('cruds.task.fields.tag_helper') }}</span>
+            </div>
+            <div class="form-group">
+                <label for="due_date">{{ trans('cruds.task.fields.due_date') }}</label>
+                <input class="form-control date {{ $errors->has('due_date') ? 'is-invalid' : '' }}" type="text" name="due_date" id="due_date" value="{{ old('due_date', $task->due_date) }}">
+                @if($errors->has('due_date'))
+                    <span class="text-danger">{{ $errors->first('due_date') }}</span>
+                @endif
+                <span class="help-block">{{ trans('cruds.task.fields.due_date_helper') }}</span>
+            </div>
+            <div class="form-group">
+                <label for="assigned_to_id">{{ trans('cruds.task.fields.assigned_to') }}</label>
+                <select class="form-control select2 {{ $errors->has('assigned_to') ? 'is-invalid' : '' }}" name="assigned_to_id" id="assigned_to_id">
+                    @foreach($assigned_tos as $id => $assigned_to)
+                        <option value="{{ $id }}" {{ ($task->assigned_to ? $task->assigned_to->id : old('assigned_to_id')) == $id ? 'selected' : '' }}>{{ $assigned_to }}</option>
+                    @endforeach
+                </select>
+                @if($errors->has('assigned_to'))
+                    <span class="text-danger">{{ $errors->first('assigned_to') }}</span>
+                @endif
+                <span class="help-block">{{ trans('cruds.task.fields.assigned_to_helper') }}</span>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-danger" type="submit">
+                    {{ trans('global.save') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@endsection
